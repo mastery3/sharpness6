@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class ProtectionMixin {
 	@Overwrite
 	public int getMaxLevel() {
-		return 10;
+		return 30;
 	}
 }
