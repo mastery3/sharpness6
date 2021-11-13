@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "mastery3.sharpness6.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "SharpnessMixin",
+    "EfficiencyMixin",
+    "UnbreakingMixin",
+    "ProtectionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

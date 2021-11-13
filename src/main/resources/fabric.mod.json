@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "sharpness6",
+  "version": "${version}",
+
+  "name": "Sharpness VI",
+  "description": "Extended enchantment levels for OP weapons",
+  "authors": [
+    "mastery3"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "CC 4.0",
+  "icon": "assets/sharpness6/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mastery3.sharpness6.Entry"
+    ]
+  },
+  "mixins": [
+    "sharpness6.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.17.x",
+    "java": ">=16"
+  }
+}
