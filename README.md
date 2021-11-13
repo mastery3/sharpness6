@@ -1,3 +1,5 @@
+For Fabric
+
 Minecraft caps your gear's potential, preventing you from making that totally not overpowered Sharpness X sword.
 
 This mod fixes that, so you can waste all of your experience on that sword. Oh, and so you actually have something to do in the deep late-game.
