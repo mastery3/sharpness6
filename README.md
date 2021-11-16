@@ -6,6 +6,8 @@ This mod fixes that, so you can waste all of your experience on that sword. Oh, 
 
 NOTE: This mod is only hosted on Modrinth and Github. Any other distributions of this mod are untrustworthy, even if the website itself is not malicious. stopmodreposts.com attempts to prevent this.
 
+Credits to the Actually Unbreaking authors since I'm too lazy to write a config
+
 FAQ
 
 Q: Will you port this to future versions?
