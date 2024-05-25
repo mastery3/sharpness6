@@ -4,11 +4,8 @@
   "package": "mastery3.sharpness6.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "SharpnessMixin",
-    "EfficiencyMixin",
     "UnbreakingMixin",
-    "ProtectionMixin",
-    "PowerMixin"
+    "EnchantmentsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

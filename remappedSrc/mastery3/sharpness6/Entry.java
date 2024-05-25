@@ -1,5 +1,20 @@
+//
+//
+//
+//
+//
+//
+//
+//
+//
 // Credit to the Actually Unbreaking developers for the config code since I'm too lazy to write a proper config
-
+//
+//
+// Code in this file is licensed as MIT.
+//
+//
+//
+//
 package mastery3.sharpness6;
 import java.io.File;
 import java.io.FileReader;
@@ -18,7 +33,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public class Entry implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("sharpness6");
 
-	public static AUConfig config;
+	public AUConfig config;
     private static Entry instance;
 
     public static Entry getInstance() {
@@ -32,7 +47,7 @@ public class Entry implements ModInitializer {
     }
     // config code based bedrockify config code
     // https://github.com/juancarloscp52/BedrockIfy/blob/1.17.x/src/main/java/me/juancarloscp52/bedrockify/Bedrockify.java
-    public static void loadConfig() {
+    public void loadConfig() {
         File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "sharpness6.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (configFile.exists()) {
@@ -49,7 +64,7 @@ public class Entry implements ModInitializer {
         }
     }
 
-    public static void saveConfig() {
+    public void saveConfig() {
         File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "sharpness6.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (!configFile.getParentFile().exists()) {
