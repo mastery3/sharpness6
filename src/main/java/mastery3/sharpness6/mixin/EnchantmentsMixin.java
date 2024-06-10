@@ -46,6 +46,57 @@ public class EnchantmentsMixin {
 			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.efficiency);
 		} else if (name == "unbreaking") {
 			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.unbreaking);
+		} else if (name == "riptide") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.riptide);
+		} else if (name == "fortune") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.fortune);
+		} else if (name == "piercing") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.piercing);
+		} else if (name == "mending") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.mending);
+		} else if (name == "fire_aspect") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.fire_aspect);
+		} else if (name == "sweeping_edge") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.sweeping_edge);
+		} else if (name == "looting") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.looting);
+		} else if (name == "loyalty") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.loyalty);
+		} else if (name == "knockback") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.knockback );
+		} else if (name == "aqua_affinity") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.aqua_affinity);
+		} else if (name == "impaling") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.impaling);
+		} else if (name == "lure") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.lure);
+		} else if (name == "luck") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.luck);
+		} else if (name == "quick_charge") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.quick_charge);
+		} else if (name == "punch") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.punch);
+		} else if (name == "multishot") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.multishot);
+		} else if (name == "impaling") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.impaling);
+		} else if (name == "flame") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.flame);
+		} else if (name == "looting") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.looting);
+		} else if (name == "depth_strider") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.depth_strider);
+		} else if (name == "frost_walker") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.frost_walker);
+		} else if (name == "swift_sneak") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.swift_sneak);
+		} else if (name == "thorns") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.thorns);
+		} else if (name == "soul_speed") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.soul_speed);
+		} else if (name == "respiration") {
+			enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.respiration);
+
 		}
     }
 }
