@@ -5,10 +5,9 @@ package mastery3.sharpness6;
 public class AUConfig {
     public int aqua_affinity = 1;
     public Integer bane_of_arthropods = null;
+    public int binding_curse = 1;
     public Integer blast_protection = null;
     public int channeling = 1;
-    public int curse_of_binding = 1;
-    public int curse_of_vanishing = 1;
     public int depth_strider = 3;
     public int efficiency = 5;
     public Integer feather_falling = null;
@@ -42,5 +41,6 @@ public class AUConfig {
     public int swift_sneak = 3;
     public int thorns = 3;
     public int unbreaking = 3;
-    public boolean unbreakingArmorFix = true;
+    public boolean unbreakingArmorFix = false;
+    public int vanishing_curse = 1;
 }
