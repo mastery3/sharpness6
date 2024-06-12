@@ -11,10 +11,7 @@ Credits to the Actually Unbreaking authors since I'm too lazy to write a config
 FAQ
 
 Q: Will you port this to future versions?
-A: Yep. The mod is pretty easy to port, so...
-
-Q: Config?
-A: Yeah, once I get the fundamentals of this mod set up.
+A: Yep. The mod is pretty easy to port, so... (except for 1.20.6, in which case I had to rewrite the entire thing)
 
 Q: Can I use this in a modpack?
 A: Sure.
