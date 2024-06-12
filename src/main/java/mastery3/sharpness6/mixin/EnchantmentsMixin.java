@@ -46,6 +46,7 @@ public class EnchantmentsMixin {
 			case "sharpness": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.sharpness); break;
 			case "smite": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.smite); break;
 			case "bane_of_arthropods": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.bane_of_arthropods); break;
+			case "channeling": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.channeling); break;
 			case "power": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.power); break;
 			case "efficiency": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.efficiency); break;
 			case "unbreaking": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.unbreaking); break;
@@ -72,6 +73,10 @@ public class EnchantmentsMixin {
 			case "thorns": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.thorns); break;
 			case "soul_speed": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.soul_speed); break;
 			case "respiration": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.respiration); break;
+			case "curse_of_binding": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.curse_of_binding); break;
+			case "curse_of_vanishing": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.curse_of_vanishing); break;
+			case "infinity": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.impaling); break;
+			case "silk_touch": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.silk_touch); break;
 		}
     }
 }

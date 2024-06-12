@@ -6,6 +6,9 @@ public class AUConfig {
     public int aqua_affinity = 1;
     public Integer bane_of_arthropods = null;
     public Integer blast_protection = null;
+    public int channeling = 1;
+    public int curse_of_binding = 1;
+    public int curse_of_vanishing = 1;
     public int depth_strider = 3;
     public int efficiency = 5;
     public Integer feather_falling = null;
@@ -15,6 +18,7 @@ public class AUConfig {
     public int fortune = 3;
     public int frost_walker = 2;
     public int impaling = 5;
+    public int infinity = 1;
     public int knockback = 2;
     public int looting = 3;
     public int loyalty = 3;
@@ -31,6 +35,7 @@ public class AUConfig {
     public int respiration = 3;
     public int riptide = 3;
     public int sharpness = 5;
+    public int silk_touch = 1;
     public Integer smite = null;
     public int soul_speed = 3;
     public int sweeping_edge = 3;
