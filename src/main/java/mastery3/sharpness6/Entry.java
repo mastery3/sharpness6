@@ -1,4 +1,4 @@
-// Credit to the Actually Unbreaking developers for the config code since I'm too lazy to write a proper config
+// Credit to the Actually Unbreaking developers for most of the config code since I'm too lazy to write a proper config
 
 package mastery3.sharpness6;
 import java.io.File;
@@ -40,13 +40,20 @@ public class Entry implements ModInitializer {
                 FileReader fileReader = new FileReader(configFile);
                 config = gson.fromJson(fileReader, AUConfig.class);
                 fileReader.close();
+                
             } catch (IOException e) {
                 LOGGER.warn("could not load sharpness6 config options: " + e.getLocalizedMessage());
             }
         } else {
             config = new AUConfig();
-            saveConfig();
         }
+        if (config.smite == null) { config.smite = config.sharpness; }
+        if (config.bane_of_arthropods == null) { config.bane_of_arthropods = config.sharpness; }
+        if (config.fire_protection == null) { config.fire_protection = config.protection; }
+        if (config.blast_protection == null) { config.blast_protection = config.protection; }
+        if (config.projectile_protection == null) { config.projectile_protection = config.protection; }
+        if (config.feather_falling == null) { config.feather_falling = config.protection; }
+        saveConfig();
     }
 
     public static void saveConfig() {

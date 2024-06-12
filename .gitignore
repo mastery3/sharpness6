@@ -1,6 +1,7 @@
 # gradle
 
 .gradle/
+gradle/
 build/
 out/
 classes/
@@ -31,3 +32,5 @@ bin/
 # fabric
 
 run/
+
+remappedSrc/
