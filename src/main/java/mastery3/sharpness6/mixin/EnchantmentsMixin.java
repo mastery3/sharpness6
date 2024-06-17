@@ -21,7 +21,7 @@ public class EnchantmentsMixin {
 			oldProperties.weight(),
 			newLevel,
 			oldProperties.minCost(),
-			oldProperties.minCost(),
+			oldProperties.maxCost(),
 			oldProperties.anvilCost(),
 			oldProperties.requiredFeatures(),
 			oldProperties.slots()
