@@ -1,9 +1,15 @@
-# Fabric Example Mod
+For Fabric
 
-## Setup
+Minecraft caps your gear's potential, preventing you from making that totally not overpowered Sharpness X sword.
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+This mod fixes that, so you can waste all of your experience on that sword. Oh, and so you actually have something to do in the deep late-game.
 
-## License
+Credits to the Actually Unbreaking authors since I'm too lazy to write a config
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+FAQ
+
+Q: Will you port this to future versions?
+A: Yep. The mod is pretty easy to port, so... (except for 1.20.6, in which case I had to rewrite the entire thing)
+
+Q: Can I use this in a modpack?
+A: Sure.
