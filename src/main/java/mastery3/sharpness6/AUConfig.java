@@ -7,7 +7,9 @@ public class AUConfig {
     public Integer bane_of_arthropods = null;
     public int binding_curse = 1;
     public Integer blast_protection = null;
+    public int breach = 4;
     public int channeling = 1;
+    public int density = 5;
     public int depth_strider = 3;
     public int efficiency = 5;
     public Integer feather_falling = null;
@@ -43,4 +45,6 @@ public class AUConfig {
     public int unbreaking = 3;
     public boolean unbreakingArmorFix = false;
     public int vanishing_curse = 1;
+    public int wind_burst = 3;
+    
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -15,6 +16,7 @@ import com.google.gson.JsonParser;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.serialization.DataResult;
 
+import mastery3.sharpness6.EditedEnchantmentData;
 import mastery3.sharpness6.Entry;
 
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,8 +37,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 
+
+
 @Mixin(net.minecraft.registry.RegistryLoader.class)
 public class RegistryLoaderMixin {
+	
+	
 	private static Definition modPropertiesMaxLevel(Definition oldDefinition, int newLevel) {
 		return new Definition(
 			oldDefinition.supportedItems(),
@@ -51,15 +57,14 @@ public class RegistryLoaderMixin {
 	}
 
 	@Inject(method="parseAndAdd(Lnet/minecraft/registry/MutableRegistry;Lcom/mojang/serialization/Decoder;Lnet/minecraft/registry/RegistryOps;Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/resource/Resource;Lnet/minecraft/registry/entry/RegistryEntryInfo;)V",
-		at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/gson/JsonParser;parseReader(Ljava/io/Reader;)Lcom/google/gson/JsonElement;", remap = false), locals = LocalCapture.CAPTURE_FAILHARD)
-	private static <E> void parseAndAdd(MutableRegistry<E> registry, com.mojang.serialization.Decoder<E> decoder, RegistryOps<com.google.gson.JsonElement> ops, RegistryKey<E> key, Resource resource, RegistryEntryInfo entryInfo, CallbackInfo ci, @Local JsonElement jsonElement) throws IOException {
+		at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/gson/JsonParser;parseReader(Ljava/io/Reader;)Lcom/google/gson/JsonElement;", remap = false), locals = LocalCapture.CAPTURE_FAILHARD, cancellable=true)
+	private static <E> void parseAndAdd(MutableRegistry<E> registry, com.mojang.serialization.Decoder<E> decoder, RegistryOps<com.google.gson.JsonElement> ops, RegistryKey<E> key, Resource resource, RegistryEntryInfo entryInfo, CallbackInfo cir, @Local JsonElement jsonElement) throws IOException {
 		Identifier wholeRegistryIdentifier = registry.getKey().getValue();
 		String wholeRegistryIdentifierString = wholeRegistryIdentifier.getNamespace() + ":" + wholeRegistryIdentifier.getPath();
 
 		if (wholeRegistryIdentifierString.equals("minecraft:enchantment")) {
 			Identifier individualEnchantmentIdentifier = key.getValue();
 			String individualEnchantmentIdentifierString = individualEnchantmentIdentifier.getNamespace() + ":" + individualEnchantmentIdentifier.getPath();
-			Entry.LOGGER.fatal(jsonElement.toString());
 			switch (individualEnchantmentIdentifierString) {
 				case "minecraft:protection": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.protection); break;
 				case "minecraft:feather_falling": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.feather_falling); break;
@@ -72,7 +77,12 @@ public class RegistryLoaderMixin {
 				case "minecraft:channeling": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.channeling); break;
 				case "minecraft:power": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.power); break;
 				case "minecraft:efficiency": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.efficiency); break;
-				case "minecraft:unbreaking":((JsonObject)jsonElement).addProperty("max_level", Entry.config.unbreaking); break;
+				case "minecraft:unbreaking":
+					if (Entry.config.unbreakingArmorFix) {
+						((JsonObject)jsonElement).add("effects", JsonParser.parseString(EditedEnchantmentData.instance.unbreakingArmorFix));
+					}
+					((JsonObject)jsonElement).addProperty("max_level", Entry.config.unbreaking);
+				break;
 				case "minecraft:riptide": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.riptide); break;
 				case "minecraft:fortune": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.fortune); break;
 				case "minecraft:piercing": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.piercing); break;
@@ -100,6 +110,9 @@ public class RegistryLoaderMixin {
 				case "minecraft:vanishing_curse": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.vanishing_curse); break;
 				case "minecraft:infinity": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.impaling); break;
 				case "minecraft:silk_touch": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.silk_touch); break;
+				case "minecraft:wind_burst": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.wind_burst); break;
+				case "minecraft:density": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.density); break;
+				case "minecraft:breach": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.breach); break;
 			}
 		}
 	}
