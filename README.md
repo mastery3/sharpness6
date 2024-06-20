@@ -4,7 +4,7 @@ Minecraft caps your gear's potential, preventing you from making that totally no
 
 This mod fixes that, so you can waste all of your experience on that sword. Oh, and so you actually have something to do in the deep late-game.
 
-Credits to the Actually Unbreaking authors since I'm too lazy to write a config
+Note that this mod does not do anything by default; you'll have to edit the configuration for any changes to take effect.
 
 FAQ
 
