@@ -108,7 +108,7 @@ public class RegistryLoaderMixin {
 				case "minecraft:respiration": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.respiration); break;
 				case "minecraft:binding_curse": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.binding_curse); break;
 				case "minecraft:vanishing_curse": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.vanishing_curse); break;
-				case "minecraft:infinity": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.impaling); break;
+				case "minecraft:infinity": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.infinity); break;
 				case "minecraft:silk_touch": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.silk_touch); break;
 				case "minecraft:wind_burst": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.wind_burst); break;
 				case "minecraft:density": ((JsonObject)jsonElement).addProperty("max_level", Entry.config.density); break;
