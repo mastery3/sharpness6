@@ -75,7 +75,7 @@ public class EnchantmentsMixin {
 			case "respiration": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.respiration); break;
 			case "binding_curse": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.binding_curse); break;
 			case "vanishing_curse": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.vanishing_curse); break;
-			case "infinity": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.impaling); break;
+			case "infinity": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.infinity); break;
 			case "silk_touch": enchantment.properties = EnchantmentsMixin.modPropertiesMaxLevel(enchantment.properties, Entry.config.silk_touch); break;
 		}
     }
