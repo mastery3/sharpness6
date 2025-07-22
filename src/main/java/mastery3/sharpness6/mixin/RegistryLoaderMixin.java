@@ -57,7 +57,7 @@ public class RegistryLoaderMixin {
 	}
 
 	@Inject(method="parseAndAdd(Lnet/minecraft/registry/MutableRegistry;Lcom/mojang/serialization/Decoder;Lnet/minecraft/registry/RegistryOps;Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/resource/Resource;Lnet/minecraft/registry/entry/RegistryEntryInfo;)V",
-		at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/gson/JsonParser;parseReader(Ljava/io/Reader;)Lcom/google/gson/JsonElement;", remap = false), locals = LocalCapture.CAPTURE_FAILHARD, cancellable=true)
+		at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/util/StrictJsonParser;parse(Ljava/io/Reader;)Lcom/google/gson/JsonElement;", remap = true), locals = LocalCapture.CAPTURE_FAILHARD, cancellable=true)
 	private static <E> void parseAndAdd(MutableRegistry<E> registry, com.mojang.serialization.Decoder<E> decoder, RegistryOps<com.google.gson.JsonElement> ops, RegistryKey<E> key, Resource resource, RegistryEntryInfo entryInfo, CallbackInfo cir, @Local JsonElement jsonElement) throws IOException {
 		Identifier wholeRegistryIdentifier = registry.getKey().getValue();
 		String wholeRegistryIdentifierString = wholeRegistryIdentifier.getNamespace() + ":" + wholeRegistryIdentifier.getPath();
