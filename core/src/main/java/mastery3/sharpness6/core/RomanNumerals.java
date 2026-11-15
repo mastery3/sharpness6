@@ -1,11 +1,7 @@
 package mastery3.sharpness6.core;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
- * Canonical Roman numeral conversion and language-entry generation for enchantment levels above 10.
+ * Canonical Roman numeral conversion for enchantment levels above 10.
  */
 public final class RomanNumerals {
 
@@ -32,19 +28,5 @@ public final class RomanNumerals {
             }
         }
         return out.toString();
-    }
-
-    /**
-     * Generates {@code enchantment.level.<n>} -> Roman numeral entries for levels {@code minLevel..maxLevel}.
-     */
-    public static Map<String, String> enchantmentLevelEntries(int minLevel, int maxLevel) {
-        if (maxLevel < minLevel) {
-            return Collections.emptyMap();
-        }
-        Map<String, String> entries = new LinkedHashMap<String, String>();
-        for (int level = minLevel; level <= maxLevel; level++) {
-            entries.put("enchantment.level." + level, toRoman(level));
-        }
-        return Collections.unmodifiableMap(entries);
     }
 }

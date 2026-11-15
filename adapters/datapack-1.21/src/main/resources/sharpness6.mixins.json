@@ -6,7 +6,8 @@
   "mixins": [
     "ForgingScreenHandlerAccessor",
     "RegistryLoaderMixin",
-    "AnvilScreenHandlerMixin"
+    "AnvilScreenHandlerMixin",
+    "EnchantmentLevelSuffixMixin"
   ],
   "injectors": {
     "defaultRequire": 1

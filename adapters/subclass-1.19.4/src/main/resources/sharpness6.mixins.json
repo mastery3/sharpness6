@@ -9,7 +9,8 @@
     "SwiftSneakEnchantmentMixin",
     "UnbreakingMixin",
     "ForgingScreenHandlerAccessor",
-    "AnvilScreenHandlerMixin"
+    "AnvilScreenHandlerMixin",
+    "EnchantmentLevelSuffixMixin"
   ],
   "injectors": {
     "defaultRequire": 1

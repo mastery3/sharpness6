@@ -8,6 +8,7 @@ def mcVersion = vProps.getProperty('minecraft_version')
 def yarnBuild = vProps.getProperty('yarn_build')
 def adapterName = vProps.getProperty('adapter')
 def langFormat = vProps.getProperty('lang_format', 'json')
+def levelSuffixMixin = Boolean.parseBoolean(vProps.getProperty('level_suffix_mixin', 'false'))
 def mcDep = vProps.getProperty('mc_dep', "~${mcVersion}")
 def loaderDep = vProps.getProperty('loader_dep', '>=0.14.0')
 def loaderVersion = vProps.getProperty('loader_version', rootProject.property('loader_version').toString())
@@ -73,6 +74,14 @@ processResources {
 
     filesMatching(['fabric.mod.json', 'sharpness6.mixins.json']) {
         expand(expandProps)
+    }
+    if (levelSuffixMixin) {
+        filesMatching(['assets/minecraft/lang/en_us.json']) {
+            filter { line -> line =~ /"enchantment\.level\./ ? null : line }
+        }
+        filesMatching(['assets/minecraft/lang/en_us.lang']) {
+            filter { line -> line.startsWith('enchantment.level.') ? null : line }
+        }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

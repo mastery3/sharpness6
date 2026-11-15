@@ -32,7 +32,5 @@ final class AnvilPolicyAndRomanTest {
         assertEquals("XCIV", RomanNumerals.toRoman(94));
         assertEquals("C", RomanNumerals.toRoman(100));
         assertEquals("CCLV", RomanNumerals.toRoman(255));
-        assertTrue(RomanNumerals.enchantmentLevelEntries(11, 255).containsKey("enchantment.level.255"));
-        assertEquals(245, RomanNumerals.enchantmentLevelEntries(11, 255).size());
     }
 }
