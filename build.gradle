@@ -1,88 +1,59 @@
 plugins {
-	id 'fabric-loom' version '1.10-SNAPSHOT'
-	id 'maven-publish'
+    id 'base'
+    id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}" apply false
 }
 
-version = project.mod_version
-group = project.maven_group
-
-base {
-	archivesName = project.archives_base_name
+subprojects { sub ->
+    if (sub.path.startsWith(':versions:')) {
+        sub.apply from: rootProject.file('gradle/version-conventions.gradle')
+    }
 }
 
-repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+def distDir = layout.buildDirectory.dir('dist')
+
+tasks.register('copyLatestJar', Copy) {
+    dependsOn ":versions:${latest_mc_version}:build"
+    from project(":versions:${latest_mc_version}").layout.buildDirectory.dir('libs')
+    include '*.jar'
+    into layout.buildDirectory.dir('libs')
 }
 
-loom {
-    splitEnvironmentSourceSets()
-
-	mods {
-		"sharpness6" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
-
+tasks.named('build') {
+    dependsOn ':core:check', 'copyLatestJar'
 }
 
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+tasks.register('buildLegacy') {
+    group = 'build'
+    description = 'Builds Legacy Fabric artifacts (MC 1.12.2 - 1.13.2) via isolated legacy build.'
+    onlyIf { file('legacy/settings.gradle').exists() }
+    doLast {
+        def gradlewCmd = System.getProperty('os.name').toLowerCase().contains('windows')
+                ? ['cmd', '/c', rootProject.file('gradlew.bat').absolutePath]
+                : [rootProject.file('gradlew').absolutePath]
+        def proc = new ProcessBuilder(gradlewCmd + ['--project-dir', rootProject.file('legacy').absolutePath, 'build'])
+                .inheritIO()
+                .start()
+        int code = proc.waitFor()
+        if (code != 0) {
+            throw new GradleException("Legacy Fabric build failed with exit code ${code}")
+        }
+    }
 }
 
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
-}
-
-java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
-	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
-}
-
-jar {
-	from("LICENSE") {
-		rename { "${it}_${project.base.archivesName.get()}"}
-	}
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
-	}
+tasks.register('buildAll', Copy) {
+    group = 'build'
+    description = 'Runs core tests and builds every supported Minecraft version into build/dist.'
+    dependsOn ':core:check'
+    dependsOn 'buildLegacy'
+    subprojects.findAll { it.path.startsWith(':versions:') }.each { verProj ->
+        dependsOn "${verProj.path}:build"
+        from verProj.layout.buildDirectory.dir('libs')
+    }
+    from('legacy/build/dist') {
+        include '*.jar'
+    }
+    include '*.jar'
+    exclude '*-dev.jar', '*-sources.jar'
+    into distDir
 }

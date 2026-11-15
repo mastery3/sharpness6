@@ -1,0 +1,115 @@
+evaluationDependsOn(':core')
+
+def vProps = new Properties()
+project.file('gradle.properties').withInputStream { vProps.load(it) }
+
+def mcVersion = vProps.getProperty('minecraft_version')
+def adapterName = vProps.getProperty('adapter')
+def sharedAdapterName = vProps.getProperty('shared_adapter', '').trim()
+def langFormat = vProps.getProperty('lang_format', 'json')
+def javaVer = vProps.getProperty('java_version').toInteger()
+def needsRemap = Boolean.parseBoolean(vProps.getProperty('remap', 'false'))
+def mappingsSpec = vProps.getProperty('mappings_spec', 'unobf')
+def loaderDep = vProps.getProperty('loader_dep', ">=0.15.0")
+def mcDep = vProps.getProperty('mc_dep', "~${mcVersion}")
+def loaderVersion = vProps.getProperty('loader_version', rootProject.property('loader_version').toString())
+def mixinCompat = "JAVA_${javaVer == 8 ? 8 : javaVer}"
+
+apply plugin: needsRemap ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+
+version = "${rootProject.property('mod_version')}+mc${mcVersion}"
+group = rootProject.property('maven_group')
+
+base {
+    archivesName = rootProject.property('archives_base_name')
+}
+
+repositories {
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion(javaVer)
+    targetCompatibility = JavaVersion.toVersion(javaVer)
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = javaVer
+    options.encoding = 'UTF-8'
+    options.compilerArgs.add('-Xlint:-options')
+}
+
+def adapterDir = rootProject.file("adapters/${adapterName}")
+def javaDirs = [file("${adapterDir}/src/main/java")]
+sharedAdapterName.split(',').collect { it.trim() }.findAll { !it.isEmpty() }.each { depName ->
+    javaDirs.add(rootProject.file("adapters/${depName}/src/main/java"))
+}
+
+def langDir = langFormat == 'legacy'
+        ? rootProject.file('shared-resources/lang-legacy')
+        : rootProject.file('shared-resources/lang-json')
+
+def accessWidenerFile = file("${adapterDir}/src/main/resources/sharpness6.accesswidener")
+if (accessWidenerFile.exists()) {
+    loom {
+        accessWidenerPath = accessWidenerFile
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDirs = javaDirs
+        resources.srcDirs = [
+                file("${adapterDir}/src/main/resources"),
+                rootProject.file('shared-resources/common'),
+                langDir,
+                rootProject.file('shared-resources/templates')
+        ]
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    minecraft "com.mojang:minecraft:${mcVersion}"
+    if (needsRemap) {
+        mappings "net.fabricmc:yarn:${mappingsSpec}:v2"
+        modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
+    } else {
+        implementation "net.fabricmc:fabric-loader:${loaderVersion}"
+    }
+}
+
+processResources {
+    def expandProps = [
+            version      : project.version,
+            mc_dep       : mcDep,
+            loader_dep   : loaderDep,
+            java_version : javaVer.toString(),
+            mixin_compat : mixinCompat
+    ]
+    inputs.properties(expandProps)
+
+    filesMatching(['fabric.mod.json', 'sharpness6.mixins.json']) {
+        expand(expandProps)
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+jar {
+    from(project(':core').sourceSets.main.output) {
+        exclude 'META-INF/**'
+    }
+    from(rootProject.file('LICENSE')) {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+tasks.named('sourcesJar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(project(':core').sourceSets.main.allSource)
+}

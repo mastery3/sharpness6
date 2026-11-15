@@ -1,10 +1,24 @@
 pluginManagement {
-	repositories {
-		maven {
-			name = 'Fabric'
-			url = 'https://maven.fabricmc.net/'
-		}
-		mavenCentral()
-		gradlePluginPortal()
-	}
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'sharpness6'
+
+include ':core'
+
+def versionsDir = file('versions')
+if (versionsDir.exists()) {
+    versionsDir.eachDir { dir ->
+        if (new File(dir, 'gradle.properties').exists()) {
+            def projPath = ":versions:${dir.name}"
+            include projPath
+        }
+    }
 }

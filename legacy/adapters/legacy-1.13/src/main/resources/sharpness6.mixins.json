@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "mastery3.sharpness6.mixin",
+  "compatibilityLevel": "${mixin_compat}",
+  "mixins": [
+    "EnchantmentBaseMixin",
+    "EnchantmentSubclassesMixin",
+    "TridentEnchantmentsMixin",
+    "UnbreakingMixin",
+    "AnvilScreenHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

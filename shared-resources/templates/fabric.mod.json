@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "sharpness6",
+  "version": "${version}",
+  "name": "Sharpness VI",
+  "description": "Extended configurable enchantment levels and optional anvil cap removal across Minecraft versions.",
+  "authors": [
+    "mastery3"
+  ],
+  "contact": {
+    "homepage": "https://github.com/mastery3/sharpness6",
+    "sources": "https://github.com/mastery3/sharpness6"
+  },
+  "license": "CC-BY-4.0",
+  "icon": "assets/sharpness6/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mastery3.sharpness6.Entry"
+    ]
+  },
+  "mixins": [
+    "sharpness6.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "${loader_dep}",
+    "minecraft": "${mc_dep}",
+    "java": ">=${java_version}"
+  }
+}
