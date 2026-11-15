@@ -3,29 +3,39 @@ package mastery3.sharpness6.mixin;
 import mastery3.sharpness6.core.RomanNumerals;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.EnchantmentTags;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Renders raised enchantment levels (11+) as Roman numerals itself instead of relying on the
- * shared "enchantment.level.N" lang keys, so the mod no longer pollutes the minecraft namespace
- * that other mods may read as a generic numeral formatter (issue #7).
- */
 @Mixin(Enchantment.class)
 public abstract class EnchantmentLevelSuffixMixin {
-
-    @ModifyArg(
-            method = "getName(Lnet/minecraft/registry/entry/RegistryEntry;I)Lnet/minecraft/text/Text;",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/text/MutableText;append(Lnet/minecraft/text/Text;)Lnet/minecraft/text/MutableText;", ordinal = 1),
-            index = 0
-    )
-    private static Text sharpness6$renderRaisedLevelSuffix(Text vanillaSuffix, RegistryEntry<Enchantment> entry, int level) {
+    @Inject(method = "getName(Lnet/minecraft/registry/entry/RegistryEntry;I)Lnet/minecraft/text/Text;",
+            at = @At("HEAD"), cancellable = true)
+    private static void sharpness6$renderRaisedLevelSuffix(RegistryEntry<Enchantment> entry, int level,
+                                                          CallbackInfoReturnable<Text> cir) {
         if (level <= 10) {
-            return vanillaSuffix;
+            return;
         }
-        return Text.literal(RomanNumerals.toRoman(level));
+        Enchantment ench = entry.value();
+        MutableText name = ench.description().copy();
+        if (entry.isIn(EnchantmentTags.CURSE)) {
+            name = Texts.setStyleIfAbsent(name, Style.EMPTY.withColor(Formatting.RED));
+        } else {
+            name = Texts.setStyleIfAbsent(name, Style.EMPTY.withColor(Formatting.GRAY));
+        }
+        if (level != 1 || ench.getMaxLevel() != 1) {
+            name.append(ScreenTexts.SPACE);
+            name.append(Text.literal(RomanNumerals.toRoman(level)));
+        }
+        cir.setReturnValue(name);
+        cir.cancel();
     }
 }
