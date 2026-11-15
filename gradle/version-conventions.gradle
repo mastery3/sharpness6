@@ -102,12 +102,8 @@ processResources {
         expand(expandProps)
     }
     if (levelSuffixMixin) {
-        filesMatching(['assets/minecraft/lang/en_us.json']) {
-            filter { line -> line =~ /"enchantment\.level\./ ? null : line }
-        }
-        filesMatching(['assets/minecraft/lang/en_us.lang']) {
-            filter { line -> line.startsWith('enchantment.level.') ? null : line }
-        }
+        exclude 'assets/minecraft/lang/en_us.json'
+        exclude 'assets/minecraft/lang/en_us.lang'
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

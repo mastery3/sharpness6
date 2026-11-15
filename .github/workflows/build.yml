@@ -2,10 +2,14 @@ name: Build & Verify
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, '1.21' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, '1.21' ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -24,7 +28,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run core tests and build latest (MC 26.3)
+      - name: Run core unit tests
+        run: ./gradlew :core:test
+
+      - name: Build latest (MC 26.3)
         run: ./gradlew build
 
       - name: Build all supported Minecraft versions
@@ -33,6 +40,6 @@ jobs:
       - name: Upload built mod jars
         uses: actions/upload-artifact@v4
         with:
-          name: sharpness6-all-versions
+          name: sharpness6-all-versions-${{ github.run_number }}
           path: build/dist/*.jar
           if-no-files-found: error

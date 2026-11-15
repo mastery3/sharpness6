@@ -46,7 +46,7 @@ Example high-level server config:
 }
 ```
 
-Includes Roman numeral localization (`enchantment.level.11`–`255`) so levels XI and above render cleanly in item tooltips.
+On 1.14.4 and newer, raised enchantment levels render their Roman numeral suffix through a mixin (`EnchantmentLevelSuffixMixin`) instead of shipping `enchantment.level.11`+ translation keys, so the mod no longer pollutes Minecraft's language namespace. Legacy 1.12.2 / 1.13.2 still ship those entries, so levels XI and above render cleanly there via the lang file.
 
 ## Project Structure & Building
 
