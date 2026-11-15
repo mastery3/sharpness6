@@ -37,6 +37,9 @@ jobs:
       - name: Build all supported Minecraft versions
         run: ./gradlew buildAll --no-parallel
 
+      - name: Verify Minecraft dependency ranges
+        run: python3 scripts/verify-version-ranges.py build/dist
+
       - name: Upload built mod jars
         uses: actions/upload-artifact@v4
         with:
