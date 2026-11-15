@@ -1,3 +1,6 @@
+// Version-module conventions for versions/*. Composes the core library plus one era adapter and optional shared adapters.
+// legacy/gradle/version-conventions.gradle is a deliberate fork of this file for the 1.12.2/1.13.2 tree:
+// keep shared sections (fabric.mod.json template fields, mixin config assembly) in sync when editing.
 evaluationDependsOn(':core')
 
 def vProps = new Properties()
@@ -13,7 +16,7 @@ def mappingsSpec = vProps.getProperty('mappings_spec', 'unobf')
 def loaderDep = vProps.getProperty('loader_dep', ">=0.15.0")
 def mcDep = vProps.getProperty('mc_dep', "~${mcVersion}")
 def loaderVersion = vProps.getProperty('loader_version', rootProject.property('loader_version').toString())
-def mixinCompat = "JAVA_${javaVer == 8 ? 8 : javaVer}"
+def mixinCompat = "JAVA_${javaVer}"
 
 apply plugin: needsRemap ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
 

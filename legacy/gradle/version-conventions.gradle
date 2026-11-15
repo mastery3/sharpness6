@@ -1,3 +1,6 @@
+// Conventions for legacy/adapters/versions (MC 1.12.2/1.13.2). Deliberate fork of ../gradle/version-conventions.gradle:
+// older defaults are intentional (Fabric for these versions ships loader 0.14.x; legacy-looming instead of root loom).
+// Keep shared sections in sync with the root file when editing.
 def vProps = new Properties()
 project.file('gradle.properties').withInputStream { vProps.load(it) }
 

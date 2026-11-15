@@ -15,6 +15,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(AnvilScreenHandler.class)
 public abstract class AnvilScreenHandlerMixin {
 
+    // Ordinal-free on purpose: every Property.set call inside updateResult is a cost write, so all of them
+    // get the clamp. If vanilla adds a set() call that must NOT be clamped, revisit this (require=1 only
+    // fails if the target disappears entirely).
     @ModifyArg(
             method = "updateResult",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/Property;set(I)V"),
@@ -26,6 +29,9 @@ public abstract class AnvilScreenHandlerMixin {
         return AnvilPolicy.adjustAnvilCost(cost, inputCount, config);
     }
 
+    // Creative-mode check shape varies by version (field read vs isInCreativeMode()); exactly one of these
+    // two hedges binds per version. Both require=0: the non-matching hedge silently no-ops instead of
+    // failing the mixin apply, so one hook covers several minors around 1.21.x.
     @ModifyExpressionValue(
             method = "updateResult",
             at = @At(

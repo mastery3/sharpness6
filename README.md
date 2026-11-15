@@ -23,7 +23,7 @@ The config file is created automatically on startup with vanilla baseline values
   - `smite` and `bane_of_arthropods` inherit `sharpness` when `null`.
   - `fire_protection`, `blast_protection`, `projectile_protection`, and `feather_falling` inherit `protection` when `null`.
   - Caps are safely clamped to `[1, 255]` on `1.20.5+` (data components/codecs) and `[1, 32767]` on `1.12.2–1.20.4` (NBT shorts).
-- **`unbreakingArmorFix`** (`false` by default): replaces vanilla's armor Unbreaking plateau (`60% + 40%/(level + 1)`) with `1 - 1/(level + 1)` so high Unbreaking levels scale asymptotically without becoming invulnerable.
+- **`unbreakingArmorFix`** (`false` by default): replaces vanilla's armor Unbreaking formula (`60% + 40%/(level + 1)`, which weakens above level 1) with `level/(level + 2)` so high Unbreaking levels scale asymptotically without becoming invulnerable.
 - **`bypassTooExpensive`** (`false` by default) & **`anvilMaxCost`** (`39` by default):
   - When `bypassTooExpensive` is `true` and `anvilMaxCost` is between `1` and `39`, anvil operations costing 40+ levels are clamped to `anvilMaxCost` so unmodified vanilla and Bedrock/Geyser clients can claim the item without desync.
   - Set `anvilMaxCost` to `0` (with `bypassTooExpensive: true`) for uncapped anvil costs.
