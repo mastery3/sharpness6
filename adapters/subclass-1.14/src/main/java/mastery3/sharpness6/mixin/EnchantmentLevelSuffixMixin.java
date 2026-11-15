@@ -22,7 +22,7 @@ public abstract class EnchantmentLevelSuffixMixin {
         Text name = new TranslatableText(self.getTranslationKey());
         name = self.isCursed() ? name.formatted(Formatting.RED) : name.formatted(Formatting.GRAY);
         if (level != 1 || self.getMaximumLevel() != 1) {
-            name.append("");
+            name.append(" ");
             name.append(new LiteralText(RomanNumerals.toRoman(level)));
         }
         cir.setReturnValue(name);

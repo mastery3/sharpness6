@@ -21,7 +21,7 @@ public abstract class EnchantmentLevelSuffixMixin {
         MutableText name = Text.translatable(self.getTranslationKey());
         name = self.isCursed() ? name.formatted(Formatting.RED) : name.formatted(Formatting.GRAY);
         if (level != 1 || self.getMaxLevel() != 1) {
-            name.append("");
+            name.append(" ");
             name.append(Text.literal(RomanNumerals.toRoman(level)));
         }
         cir.setReturnValue(name);
