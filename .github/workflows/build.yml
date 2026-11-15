@@ -2,7 +2,7 @@ name: Build & Verify
 
 on:
   push:
-    branches: [ main, '1.21' ]
+    branches: [ main, '1.21', 'multi-version-2.0.0' ]
   pull_request:
     branches: [ main, '1.21' ]
   workflow_dispatch:
