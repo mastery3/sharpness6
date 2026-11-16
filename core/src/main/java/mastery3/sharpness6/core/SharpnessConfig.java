@@ -10,6 +10,14 @@ import java.util.function.Consumer;
  */
 public final class SharpnessConfig {
 
+    private static final java.util.Set<String> VANILLA_ENCHANTMENT_FIELDS = new java.util.HashSet<String>(java.util.Arrays.asList(
+            "aqua_affinity", "bane_of_arthropods", "binding_curse", "blast_protection", "breach", "channeling",
+            "density", "depth_strider", "efficiency", "feather_falling", "fire_aspect", "fire_protection", "flame",
+            "fortune", "frost_walker", "impaling", "infinity", "knockback", "looting", "loyalty", "luck_of_the_sea",
+            "lunge", "lure", "mending", "multishot", "piercing", "power", "projectile_protection", "protection",
+            "punch", "quick_charge", "respiration", "riptide", "sharpness", "silk_touch", "smite", "soul_speed",
+            "sweeping_edge", "swift_sneak", "thorns", "unbreaking", "vanishing_curse", "wind_burst"));
+
     public int aqua_affinity = 1;
     public Integer bane_of_arthropods = null;
     public int binding_curse = 1;
@@ -124,20 +132,29 @@ public final class SharpnessConfig {
                 if (key == null || value == null) {
                     continue;
                 }
-                String field = key.contains(":") ? key.substring(key.indexOf(':') + 1) : key;
-                field = field.replace("-", "_");
-                try {
-                    java.lang.reflect.Field f = SharpnessConfig.class.getField(field);
-                    if (f.getType() == int.class || f.getType() == Integer.class) {
-                        f.set(this, value);
+                String trimmed = key.trim();
+                String namespace = "minecraft";
+                String path = trimmed;
+                if (trimmed.indexOf(':') >= 0) {
+                    namespace = trimmed.substring(0, trimmed.indexOf(':'));
+                    path = trimmed.substring(trimmed.indexOf(':') + 1);
+                }
+                String field = path.replace("-", "_").toLowerCase(java.util.Locale.ROOT);
+
+                if ("minecraft".equals(namespace) && VANILLA_ENCHANTMENT_FIELDS.contains(field)) {
+                    try {
+                        java.lang.reflect.Field f = SharpnessConfig.class.getField(field);
+                        if (f.getType() == int.class || f.getType() == Integer.class) {
+                            f.set(this, value);
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
                     }
-                } catch (NoSuchFieldException ignored) {
-                    // Unknown enchantment (modded/datapack): route to customMaxLevels.
+                } else {
+                    // Custom namespace or unknown vanilla id: retain full identifier in customMaxLevels.
                     if (customMaxLevels == null) {
                         customMaxLevels = new LinkedHashMap<String, Integer>();
                     }
-                    customMaxLevels.put(EnchantmentIds.canonicalize(key), value);
-                } catch (IllegalAccessException ignored) {
+                    customMaxLevels.put(EnchantmentIds.canonicalize(trimmed), value);
                 }
             }
         }
