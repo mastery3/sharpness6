@@ -55,6 +55,31 @@ public final class SharpnessConfig {
     public int vanishing_curse = 1;
     public int wind_burst = 3;
 
+    /**
+     * Alpha (26.2-alpha1) compatibility: canonical map of enchantment ID to max level.
+     * When present, values take precedence over the individual fields above.
+     */
+    public Map<String, Integer> enchantments;
+
+    /**
+     * Alpha (26.2-alpha1) compatibility: nested enhancement toggles.
+     */
+    public Enhancements enhancements;
+
+    public static final class Enhancements {
+        public Unbreaking unbreaking;
+
+        public Enhancements() {
+        }
+    }
+
+    public static final class Unbreaking {
+        public Boolean modifyArmorFormula;
+
+        public Unbreaking() {
+        }
+    }
+
     public Map<String, Integer> customMaxLevels = new LinkedHashMap<String, Integer>();
 
     /**
@@ -62,6 +87,7 @@ public final class SharpnessConfig {
      * and normalizes nullable containers.
      */
     public void normalizeFallbacks() {
+        migrateAlphaFormat();
         if (smite == null) {
             smite = sharpness;
         }
@@ -83,6 +109,45 @@ public final class SharpnessConfig {
         if (customMaxLevels == null) {
             customMaxLevels = new LinkedHashMap<String, Integer>();
         }
+    }
+
+    /**
+     * Migrates the Modrinth alpha (26.2-alpha1) configuration shape into this class's canonical fields.
+     * The alpha stores levels in an {@code enchantments} map and toggles in {@code enhancements.unbreaking.modifyArmorFormula}.
+     * Values from the map take precedence over the individual fields when both are present.
+     */
+    public void migrateAlphaFormat() {
+        if (enchantments != null && !enchantments.isEmpty()) {
+            for (Map.Entry<String, Integer> entry : enchantments.entrySet()) {
+                String key = entry.getKey();
+                Integer value = entry.getValue();
+                if (key == null || value == null) {
+                    continue;
+                }
+                String field = key.contains(":") ? key.substring(key.indexOf(':') + 1) : key;
+                field = field.replace("-", "_");
+                try {
+                    java.lang.reflect.Field f = SharpnessConfig.class.getField(field);
+                    if (f.getType() == int.class || f.getType() == Integer.class) {
+                        f.set(this, value);
+                    }
+                } catch (NoSuchFieldException ignored) {
+                    // Unknown enchantment (modded/datapack): route to customMaxLevels.
+                    if (customMaxLevels == null) {
+                        customMaxLevels = new LinkedHashMap<String, Integer>();
+                    }
+                    customMaxLevels.put(EnchantmentIds.canonicalize(key), value);
+                } catch (IllegalAccessException ignored) {
+                }
+            }
+        }
+        if (enhancements != null && enhancements.unbreaking != null
+                && enhancements.unbreaking.modifyArmorFormula != null) {
+            unbreakingArmorFix = enhancements.unbreaking.modifyArmorFormula.booleanValue();
+        }
+        // Null out alpha-only containers so they don't get serialized in our format.
+        enchantments = null;
+        enhancements = null;
     }
 
     /**

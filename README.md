@@ -1,32 +1,37 @@
 # Sharpness VI
 
-A configurable **Fabric** mod that lets players and server owners customize enchantment maximum levels beyond vanilla caps and fix vanilla's plateauing Unbreaking scaling on armor across **Minecraft 1.12.2 through 26.3**.
+A configurable **Fabric** mod that lets players and server owners raise enchantment maximum levels beyond vanilla caps and fix vanilla's plateauing Unbreaking scaling on armor. Supports **Minecraft 1.12.2 through 26.3**.
 
-> **Safe by default:** Leaving default values in `config/sharpness6.json` preserves vanilla behavior until you edit the caps you want to raise.
+> **Safe by default:** Leaving the default values in `config/sharpness6.json` preserves vanilla behavior until you edit the caps you want to raise.
+
+## What it does
+
+- Raises maximum levels for vanilla enchantments (Sharpness, Protection, Efficiency, Fortune, Looting, Unbreaking, and many more) via a per-enchantment config.
+- Optionally fixes armor Unbreaking so higher levels keep scaling instead of plateauing at 60%.
+- Supports custom/datapack enchantments through `customMaxLevels`.
+- Works on both Java Edition clients and dedicated servers.
 
 ## Supported Minecraft Versions
 
-| Era | Minecraft Versions | Loader / Mappings | Adapter Strategy |
-| :--- | :--- | :--- | :--- |
-| Unobfuscated Modern | `26.1.2`, `26.2`, `26.3` | Fabric Loader `>=0.20.1`, Mojmap, Java 25+ | `unobf-26` (Registry JSON patcher) |
-| Data-Driven | `1.21.1`, `1.21.4`, `1.21.8`, `1.21.11` | Fabric Loader, Yarn, Java 21+ | `datapack-1.21` (`RegistryLoaderMixin`) |
-| Data Components | `1.20.6` | Fabric Loader `>=0.15.10`, Yarn, Java 21+ | `properties-1.20.6` (`EnchantmentMixin` + `UnbreakingEnchantmentMixin`) |
-| ScreenHandler Era | `1.16.5`, `1.17.1`, `1.18.2`, `1.19.2`, `1.19.4`, `1.20.1`, `1.20.4` | Fabric Loader `>=0.15.11`, Yarn | Composable `subclass-*` mixins across `Enchantment` & overrides |
-| Pre-ScreenHandler | `1.14.4`, `1.15.2` | Fabric Loader `>=0.15.11`, Yarn, Java 8+ | `subclass-1.14` (`getMaximumLevel`) |
-| Legacy Fabric | `1.12.2`, `1.13.2` | Legacy Fabric Loader `>=0.14.0`, Legacy Yarn | Isolated `legacy/` Gradle build (`en_us.lang` in `1.12.2`, `en_us.json` in `1.13.2`) |
+1.12.2, 1.13.2, 1.14.4, 1.15.2, 1.16.5, 1.17.1, 1.18.2, 1.19.2, 1.19.4, 1.20.1, 1.20.4, 1.20.6, 1.21.1, 1.21.4, 1.21.8, 1.21.11, 26.1.2, 26.2, 26.3
+
+Each version has its own jar. Pick the one matching your Minecraft version.
+
+## Installation
+
+1. Install [Fabric Loader](https://fabricmc.net/use/) for your Minecraft version.
+2. Download the matching Sharpness VI jar from the [releases page](https://github.com/mastery3/sharpness6/releases).
+3. Place the jar in your `mods/` folder.
+4. Start the game once to generate `config/sharpness6.json`, then edit it to taste.
 
 ## Configuration (`config/sharpness6.json`)
 
-The config file is created automatically on startup with vanilla baseline values:
+The config file is created automatically on startup with vanilla baseline values. Per-enchantment caps (e.g. `sharpness`, `protection`, `efficiency`) default to vanilla levels; raise them to allow higher enchantments. `smite`/`bane_of_arthropods` inherit `sharpness` when `null`; the protection family inherits `protection`.
 
-- **Per-enchantment caps** (e.g., `sharpness`, `protection`, `efficiency`, `fortune`, `looting`, `unbreaking`, `density`, `breach`, `wind_burst`, `lunge`, etc.):
-  - `smite` and `bane_of_arthropods` inherit `sharpness` when `null`.
-  - `fire_protection`, `blast_protection`, `projectile_protection`, and `feather_falling` inherit `protection` when `null`.
-  - Caps are safely clamped to `[1, 255]` on `1.20.5+` (data components/codecs) and `[1, 32767]` on `1.12.2–1.20.4` (NBT shorts).
-- **`unbreakingArmorFix`** (`false` by default): replaces vanilla's armor Unbreaking formula (`60% + 40%/(level + 1)`, which weakens above level 1) with `level/(level + 2)` so high Unbreaking levels scale asymptotically without becoming invulnerable.
-- **`customMaxLevels`** (`{}` by default): optional map of `namespace:enchantment_id` (or short `minecraft:` path) to max level for modded/datapack enchantments or explicit overrides. Legacy `minecraft:sweeping` aliases automatically to `minecraft:sweeping_edge`.
+- **`unbreakingArmorFix`** (`false` by default): replaces vanilla's armor Unbreaking formula (`60% + 40%/(level + 1)`, which weakens above level 1) with `level/(level + 2)` so high Unbreaking levels scale asymptotically.
+- **`customMaxLevels`** (`{}` by default): map of enchantment ID to max level for modded/datapack enchantments.
 
-Example high-level server config:
+Example:
 
 ```json
 {
@@ -40,34 +45,19 @@ Example high-level server config:
 }
 ```
 
-On 1.14.4 and newer, raised enchantment levels render their Roman numeral suffix through a mixin (`EnchantmentLevelSuffixMixin`) instead of shipping `enchantment.level.11`+ translation keys, so the mod no longer pollutes Minecraft's language namespace. Legacy 1.12.2 / 1.13.2 still ship those entries, so levels XI and above render cleanly there via the lang file.
+Caps are clamped to `[1, 255]` on 1.20.5+ and `[1, 32767]` on 1.12.2–1.20.4.
 
-## Project Structure & Building
+## Important limitations
 
-- [`core/`](core) — Minecraft-agnostic config store, policy normalization, Roman numerals, Gson registry patcher, and JUnit 5 unit tests.
-- [`adapters/`](adapters) — Minimal, composable per-era Fabric integration modules sharing `core/` and [`shared-resources/`](shared-resources).
-- [`versions/`](versions) — Declarative per-version build definitions (`gradle.properties`).
-- [`legacy/`](legacy) — Isolated Legacy Fabric Gradle build for `1.12.2` and `1.13.2` sharing `../core` and `../shared-resources`.
+- Only 26.3 has been runtime-tested. Other versions compile and pass bytecode checks but have not each been launched.
+- On 1.12.2 and 1.13.2, enchantment levels above 255 can display raw translation keys. Modern versions render them correctly.
+- Clients without the mod display raw `enchantment.level.11`+ keys for levels above 10 unless they install the mod or its resource pack.
 
-Requires JDK 25+ (`javac --release` handles older target bytecodes automatically):
+## License
 
-```bash
-# Run core JUnit tests + build latest Minecraft (26.3) jar into build/libs/
-./gradlew build
+Licensed under Creative Commons Attribution 4.0. See [`LICENSE`](LICENSE).
 
-# Run only core unit tests
-./gradlew :core:test
+## More information
 
-# Build every supported Minecraft version (1.12.2 - 26.3) into build/dist/
-./gradlew buildAll
-
-# Build only a specific version
-./gradlew :versions:1.21.11:build
-```
-
-## FAQ
-
-- **Does installing this without editing the config change gameplay?**
-  No. All default values match vanilla Minecraft (vanilla max levels).
-- **Can I use this in a modpack or server-side?**
-  Yes (licensed under Creative Commons Attribution 4.0; see [`LICENSE`](LICENSE)). Clients without the mod display raw `enchantment.level.11`+ keys for levels above 10 unless they install the mod or its resource pack.
+- Build and architecture details: [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- Source: https://github.com/mastery3/sharpness6
