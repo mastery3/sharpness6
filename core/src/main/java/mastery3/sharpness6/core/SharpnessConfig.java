@@ -9,216 +9,274 @@ import java.util.function.Consumer;
  * Preserves backward compatibility with legacy config keys while adding 26.3, anvil, and custom enchantment support.
  */
 public final class SharpnessConfig {
-
-    private static final java.util.Set<String> VANILLA_ENCHANTMENT_FIELDS = new java.util.HashSet<String>(java.util.Arrays.asList(
-            "aqua_affinity", "bane_of_arthropods", "binding_curse", "blast_protection", "breach", "channeling",
-            "density", "depth_strider", "efficiency", "feather_falling", "fire_aspect", "fire_protection", "flame",
-            "fortune", "frost_walker", "impaling", "infinity", "knockback", "looting", "loyalty", "luck_of_the_sea",
-            "lunge", "lure", "mending", "multishot", "piercing", "power", "projectile_protection", "protection",
-            "punch", "quick_charge", "respiration", "riptide", "sharpness", "silk_touch", "smite", "soul_speed",
-            "sweeping_edge", "swift_sneak", "thorns", "unbreaking", "vanishing_curse", "wind_burst"));
-
-    public int aqua_affinity = 1;
-    public Integer bane_of_arthropods = null;
-    public int binding_curse = 1;
-    public Integer blast_protection = null;
-    public int breach = 4;
-    public int channeling = 1;
-    public int density = 5;
-    public int depth_strider = 3;
-    public int efficiency = 5;
-    public Integer feather_falling = null;
-    public int fire_aspect = 2;
-    public Integer fire_protection = null;
-    public int flame = 1;
-    public int fortune = 3;
-    public int frost_walker = 2;
-    public int impaling = 5;
-    public int infinity = 1;
-    public int knockback = 2;
-    public int looting = 3;
-    public int loyalty = 3;
-    public int luck_of_the_sea = 3;
-    public int lunge = 3;
-    public int lure = 3;
-    public int mending = 1;
-    public int multishot = 1;
-    public int piercing = 4;
-    public int power = 5;
-    public Integer projectile_protection = null;
-    public int protection = 4;
-    public int punch = 2;
-    public int quick_charge = 3;
-    public int respiration = 3;
-    public int riptide = 3;
-    public int sharpness = 5;
-    public int silk_touch = 1;
-    public Integer smite = null;
-    public int soul_speed = 3;
-    public int sweeping_edge = 3;
-    public int swift_sneak = 3;
-    public int thorns = 3;
-    public int unbreaking = 3;
-    public boolean unbreakingArmorFix = false;
-    public int vanishing_curse = 1;
-    public int wind_burst = 3;
-
-    /**
-     * Alpha (26.2-alpha1) compatibility: canonical map of enchantment ID to max level.
-     * When present, values take precedence over the individual fields above.
-     */
-    public Map<String, Integer> enchantments;
-
-    /**
-     * Alpha (26.2-alpha1) compatibility: nested enhancement toggles.
-     */
-    public Enhancements enhancements;
+    public Map<String, Integer> enchantments = new LinkedHashMap<String, Integer>();
+    public Enhancements enhancements = new Enhancements();
 
     public static final class Enhancements {
-        public Unbreaking unbreaking;
+        public Unbreaking unbreaking = new Unbreaking();
 
         public Enhancements() {
         }
     }
 
     public static final class Unbreaking {
-        public Boolean modifyArmorFormula;
+        public Boolean modifyArmorFormula = false;
 
         public Unbreaking() {
         }
     }
 
-    public Map<String, Integer> customMaxLevels = new LinkedHashMap<String, Integer>();
-
     /**
      * Populates null fallback fields (damage family -> sharpness, protection family -> protection)
      * and normalizes nullable containers.
      */
-    public void normalizeFallbacks() {
-        migrateAlphaFormat();
-        if (smite == null) {
-            smite = sharpness;
-        }
-        if (bane_of_arthropods == null) {
-            bane_of_arthropods = sharpness;
-        }
-        if (fire_protection == null) {
-            fire_protection = protection;
-        }
-        if (blast_protection == null) {
-            blast_protection = protection;
-        }
-        if (projectile_protection == null) {
-            projectile_protection = protection;
-        }
-        if (feather_falling == null) {
-            feather_falling = protection;
-        }
-        if (customMaxLevels == null) {
-            customMaxLevels = new LinkedHashMap<String, Integer>();
-        }
-    }
+    public void migrate() {
+        if (smite == null) { smite = sharpness; }
+        if (bane_of_arthropods == null) { bane_of_arthropods = sharpness; }
+        if (fire_protection == null) { fire_protection = protection; }
+        if (blast_protection == null) { blast_protection = protection; }
+        if (projectile_protection == null) { projectile_protection = protection; }
+        if (feather_falling == null) { feather_falling = protection; }
+        if (enchantments == null) { enchantments = new LinkedHashMap<String, Integer>(); }
+        if (enhancements == null) { enhancements = new Enhancements(); }
 
-    /**
-     * Migrates the Modrinth alpha (26.2-alpha1) configuration shape into this class's canonical fields.
-     * The alpha stores levels in an {@code enchantments} map and toggles in {@code enhancements.unbreaking.modifyArmorFormula}.
-     * Values from the map take precedence over the individual fields when both are present.
-     */
-    public void migrateAlphaFormat() {
-        if (enchantments != null && !enchantments.isEmpty()) {
-            for (Map.Entry<String, Integer> entry : enchantments.entrySet()) {
-                String key = entry.getKey();
-                Integer value = entry.getValue();
-                if (key == null || value == null) {
-                    continue;
-                }
-                String trimmed = key.trim();
-                String namespace = "minecraft";
-                String path = trimmed;
-                if (trimmed.indexOf(':') >= 0) {
-                    namespace = trimmed.substring(0, trimmed.indexOf(':'));
-                    path = trimmed.substring(trimmed.indexOf(':') + 1);
-                }
-                String field = path.replace("-", "_").toLowerCase(java.util.Locale.ROOT);
+        if (aqua_affinity != null && !enchantments.containsKey("minecraft:aqua_affinity")) {
+            enchantments.put("minecraft:aqua_affinity", aqua_affinity);
+            aqua_affinity = null;
+        }
 
-                if ("minecraft".equals(namespace) && VANILLA_ENCHANTMENT_FIELDS.contains(field)) {
-                    try {
-                        java.lang.reflect.Field f = SharpnessConfig.class.getField(field);
-                        if (f.getType() == int.class || f.getType() == Integer.class) {
-                            f.set(this, value);
-                        }
-                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
-                    }
-                } else {
-                    // Custom namespace or unknown vanilla id: retain full identifier in customMaxLevels.
-                    if (customMaxLevels == null) {
-                        customMaxLevels = new LinkedHashMap<String, Integer>();
-                    }
-                    customMaxLevels.put(EnchantmentIds.canonicalize(trimmed), value);
-                }
+        if (bane_of_arthropods != null && !enchantments.containsKey("minecraft:bane_of_arthropods")) {
+            enchantments.put("minecraft:bane_of_arthropods", bane_of_arthropods);
+            bane_of_arthropods = null;
+        }
+
+        if (binding_curse != null && !enchantments.containsKey("minecraft:binding_curse")) {
+            enchantments.put("minecraft:binding_curse", binding_curse);
+            binding_curse = null;
+        }
+
+        if (blast_protection != null && !enchantments.containsKey("minecraft:blast_protection")) {
+            enchantments.put("minecraft:blast_protection", blast_protection);
+            blast_protection = null;
+        }
+
+        if (breach != null && !enchantments.containsKey("minecraft:breach")) {
+            enchantments.put("minecraft:breach", blast_protection);
+            breach = null;
+        }
+
+        if (channeling != null && !enchantments.containsKey("minecraft:channeling")) {
+            enchantments.put("minecraft:channeling", channeling);
+            channeling = null;
+        }
+
+        if (density != null && !enchantments.containsKey("minecraft:density")) {
+            enchantments.put("minecraft:density", density);
+            density = null;
+        }
+
+        if (depth_strider != null && !enchantments.containsKey("minecraft:depth_strider")) {
+            enchantments.put("minecraft:depth_strider", depth_strider);
+            depth_strider = null;
+        }
+
+        if (efficiency != null && !enchantments.containsKey("minecraft:efficiency")) {
+            enchantments.put("minecraft:efficiency", efficiency);
+            efficiency = null;
+        }
+
+        if (feather_falling != null && !enchantments.containsKey("minecraft:feather_falling")) {
+            enchantments.put("minecraft:feather_falling", feather_falling);
+            feather_falling = null;
+        }
+
+        if (fire_aspect != null && !enchantments.containsKey("minecraft:fire_aspect")) {
+            enchantments.put("minecraft:fire_aspect", fire_aspect);
+            fire_aspect = null;
+        }
+
+        if (fire_protection != null && !enchantments.containsKey("minecraft:fire_protection")) {
+            enchantments.put("minecraft:fire_protection", fire_protection);
+            fire_protection = null;
+        }
+
+        if (flame != null && !enchantments.containsKey("minecraft:flame")) {
+            enchantments.put("minecraft:flame", flame);
+            flame = null;
+        }
+
+        if (fortune != null && !enchantments.containsKey("minecraft:fortune")) {
+            enchantments.put("minecraft:fortune", fortune);
+            fortune = null;
+        }
+
+        if (frost_walker != null && !enchantments.containsKey("minecraft:frost_walker")) {
+            enchantments.put("minecraft:frost_walker", frost_walker);
+            frost_walker = null;
+        }
+
+        if (impaling != null && !enchantments.containsKey("minecraft:impaling")) {
+            enchantments.put("minecraft:impaling", impaling);
+            impaling = null;
+        }
+
+        if (infinity != null && !enchantments.containsKey("minecraft:infinity")) {
+            enchantments.put("minecraft:infinity", infinity);
+            infinity = null;
+        }
+
+        if (knockback != null && !enchantments.containsKey("minecraft:knockback")) {
+            enchantments.put("minecraft:knockback", knockback);
+            knockback = null;
+        }
+
+        if (looting != null && !enchantments.containsKey("minecraft:looting")) {
+            enchantments.put("minecraft:looting", looting);
+            looting = null;
+        }
+
+        if (loyalty != null && !enchantments.containsKey("minecraft:loyalty")) {
+            enchantments.put("minecraft:loyalty", loyalty);
+            loyalty = null;
+        }
+
+        if (luck_of_the_sea != null && !enchantments.containsKey("minecraft:luck_of_the_sea")) {
+            enchantments.put("minecraft:luck_of_the_sea", luck_of_the_sea);
+            luck_of_the_sea = null;
+        }
+
+        if (lunge != null && !enchantments.containsKey("minecraft:lunge")) {
+            enchantments.put("minecraft:luck_of_the_sea", lunge);
+            lunge = null;
+        }
+
+        if (lure != null && !enchantments.containsKey("minecraft:lure")) {
+            enchantments.put("minecraft:lure", lure);
+            lure = null;
+        }
+
+        if (mending != null && !enchantments.containsKey("minecraft:mending")) {
+            enchantments.put("minecraft:mending", mending);
+            mending = null;
+        }
+
+        if (multishot != null && !enchantments.containsKey("minecraft:multishot")) {
+            enchantments.put("minecraft:multishot", multishot);
+            multishot = null;
+        }
+
+        if (piercing != null && !enchantments.containsKey("minecraft:piercing")) {
+            enchantments.put("minecraft:piercing", piercing);
+            piercing = null;
+        }
+
+        if (power != null && !enchantments.containsKey("minecraft:power")) {
+            enchantments.put("minecraft:power", power);
+            power = null;
+        }
+
+        if (projectile_protection != null && !enchantments.containsKey("minecraft:projectile_protection")) {
+            enchantments.put("minecraft:projectile_protection", projectile_protection);
+            projectile_protection = null;
+        }
+
+        if (protection != null && !enchantments.containsKey("minecraft:protection")) {
+            enchantments.put("minecraft:protection", protection);
+            protection = null;
+        }
+
+        if (punch != null && !enchantments.containsKey("minecraft:punch")) {
+            enchantments.put("minecraft:punch", punch);
+            punch = null;
+        }
+
+        if (quick_charge != null && !enchantments.containsKey("minecraft:quick_charge")) {
+            enchantments.put("minecraft:quick_charge", quick_charge);
+            quick_charge = null;
+        }
+
+        if (respiration != null && !enchantments.containsKey("minecraft:respiration")) {
+            enchantments.put("minecraft:respiration", respiration);
+            respiration = null;
+        }
+
+        if (riptide != null && !enchantments.containsKey("minecraft:riptide")) {
+            enchantments.put("minecraft:riptide", riptide);
+            riptide = null;
+        }
+
+        if (sharpness != null && !enchantments.containsKey("minecraft:sharpness")) {
+            enchantments.put("minecraft:sharpness", sharpness);
+            sharpness = null;
+        }
+
+        if (silk_touch != null && !enchantments.containsKey("minecraft:silk_touch")) {
+            enchantments.put("minecraft:silk_touch", silk_touch);
+            silk_touch = null;
+        }
+
+        if (smite != null && !enchantments.containsKey("minecraft:smite")) {
+            enchantments.put("minecraft:smite", smite);
+            smite = null;
+        }
+
+        if (soul_speed != null && !enchantments.containsKey("minecraft:soul_speed")) {
+            enchantments.put("minecraft:soul_speed", soul_speed);
+            soul_speed = null;
+        }
+
+        if (sweeping_edge != null && !enchantments.containsKey("minecraft:sweeping_edge")) {
+            enchantments.put("minecraft:sweeping_edge", sweeping_edge);
+            sweeping_edge = null;
+        }
+
+        if (swift_sneak != null && !enchantments.containsKey("minecraft:swift_sneak")) {
+            enchantments.put("minecraft:swift_sneak", swift_sneak);
+            swift_sneak = null;
+        }
+
+        if (thorns != null && !enchantments.containsKey("minecraft:thorns")) {
+            enchantments.put("minecraft:thorns", thorns);
+            thorns = null;
+        }
+
+        if (unbreaking != null && !enchantments.containsKey("minecraft:unbreaking")) {
+            enchantments.put("minecraft:unbreaking", unbreaking);
+            unbreaking = null;
+        }
+
+        if (vanishing_curse != null && !enchantments.containsKey("minecraft:vanishing_curse")) {
+            enchantments.put("minecraft:vanishing_curse", vanishing_curse);
+            vanishing_curse = null;
+        }
+
+        if (wind_burst != null && !enchantments.containsKey("minecraft:wind_burst")) {
+            enchantments.put("minecraft:vanishing_curse", wind_burst);
+            wind_burst = null;
+        }
+
+        if (unbreakingArmorFix != null) {
+            enhancements.unbreaking.modifyArmorFormula = true;
+            unbreakingArmorFix = null;
+        }
+
+        for (Map.Entry<String, Integer> entry : enchantments.entrySet()) {
+            String canonicalizedEnchantmentName = EnchantmentIds.canonicalize(entry.getKey());
+            if (entry.getKey() != canonicalizedEnchantmentName && !enchantments.containsKey(canonicalizedEnchantmentName)) {
+                enchantments.put(canonicalizedEnchantmentName, entry.getValue());
+                enchantments.remove(entry.getKey());
             }
         }
-        if (enhancements != null && enhancements.unbreaking != null
-                && enhancements.unbreaking.modifyArmorFormula != null) {
-            unbreakingArmorFix = enhancements.unbreaking.modifyArmorFormula.booleanValue();
-        }
-        // Null out alpha-only containers so they don't get serialized in our format.
-        enchantments = null;
-        enhancements = null;
     }
 
     /**
      * Builds a normalized, bounded map from canonical enchantment IDs to configured maximum levels.
      */
     public Map<String, Integer> toBoundedLevelMap(int maxAllowedCap, Consumer<String> warningSink) {
-        normalizeFallbacks();
+        migrate();
         Map<String, Integer> levels = new LinkedHashMap<String, Integer>();
 
-        putBounded(levels, "minecraft:aqua_affinity", aqua_affinity, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:bane_of_arthropods", bane_of_arthropods, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:binding_curse", binding_curse, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:blast_protection", blast_protection, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:breach", breach, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:channeling", channeling, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:density", density, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:depth_strider", depth_strider, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:efficiency", efficiency, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:feather_falling", feather_falling, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:fire_aspect", fire_aspect, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:fire_protection", fire_protection, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:flame", flame, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:fortune", fortune, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:frost_walker", frost_walker, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:impaling", impaling, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:infinity", infinity, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:knockback", knockback, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:looting", looting, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:loyalty", loyalty, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:luck_of_the_sea", luck_of_the_sea, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:lunge", lunge, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:lure", lure, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:mending", mending, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:multishot", multishot, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:piercing", piercing, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:power", power, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:projectile_protection", projectile_protection, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:protection", protection, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:punch", punch, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:quick_charge", quick_charge, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:respiration", respiration, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:riptide", riptide, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:sharpness", sharpness, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:silk_touch", silk_touch, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:smite", smite, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:soul_speed", soul_speed, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:sweeping_edge", sweeping_edge, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:swift_sneak", swift_sneak, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:thorns", thorns, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:unbreaking", unbreaking, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:vanishing_curse", vanishing_curse, maxAllowedCap, warningSink);
-        putBounded(levels, "minecraft:wind_burst", wind_burst, maxAllowedCap, warningSink);
-
-        for (Map.Entry<String, Integer> entry : customMaxLevels.entrySet()) {
+        for (Map.Entry<String, Integer> entry : enchantments.entrySet()) {
             String key = EnchantmentIds.canonicalize(entry.getKey());
             Integer value = entry.getValue();
             if (!key.isEmpty() && value != null) {
@@ -254,4 +312,50 @@ public final class SharpnessConfig {
         }
         return value;
     }
+
+    // Legacy
+    public Integer aqua_affinity = null;
+    public Integer bane_of_arthropods = null;
+    public Integer binding_curse = null;
+    public Integer blast_protection = null;
+    public Integer breach = null;
+    public Integer channeling = null;
+    public Integer density = null;
+    public Integer depth_strider = null;
+    public Integer efficiency = null;
+    public Integer feather_falling = null;
+    public Integer fire_aspect = null;
+    public Integer fire_protection = null;
+    public Integer flame = null;
+    public Integer fortune = null;
+    public Integer frost_walker = null;
+    public Integer impaling = null;
+    public Integer infinity = null;
+    public Integer knockback = null;
+    public Integer looting = null;
+    public Integer loyalty = null;
+    public Integer luck_of_the_sea = null;
+    public Integer lunge = null;
+    public Integer lure = null;
+    public Integer mending = null;
+    public Integer multishot = null;
+    public Integer piercing = null;
+    public Integer power = null;
+    public Integer projectile_protection = null;
+    public Integer protection = null;
+    public Integer punch = null;
+    public Integer quick_charge = null;
+    public Integer respiration = null;
+    public Integer riptide = null;
+    public Integer sharpness = null;
+    public Integer silk_touch = null;
+    public Integer smite = null;
+    public Integer soul_speed = null;
+    public Integer sweeping_edge = null;
+    public Integer swift_sneak = null;
+    public Integer thorns = null;
+    public Integer unbreaking = null;
+    public Boolean unbreakingArmorFix = null;
+    public Integer vanishing_curse = null;
+    public Integer wind_burst = null;
 }

@@ -26,7 +26,7 @@ final class EnchantmentLimitPolicyTest {
         SharpnessConfig config = new SharpnessConfig();
         config.sharpness = 10;
         config.sweeping_edge = 6;
-        config.customMaxLevels.put("nova_structures:gravity", 7);
+        config.enchantments.put("nova_structures:gravity", 7);
 
         EnchantmentLimitPolicy policy = new EnchantmentLimitPolicy(
                 config, EnchantmentIds.DATA_DRIVEN_MAX_LEVEL_CAP, null);
@@ -39,19 +39,31 @@ final class EnchantmentLimitPolicyTest {
     }
 
     @Test
-    void clampsLevelsToCodecBoundsWithWarnings() {
+    void resolvesActiveOverrides() {
         SharpnessConfig config = new SharpnessConfig();
-        config.sharpness = 999;
-        config.smite = 5;
-        config.bane_of_arthropods = 5;
-        config.mending = 0;
+        config.enchantments.put("minecraft:sharpness", 6);
         List<String> warnings = new ArrayList<String>();
 
         EnchantmentLimitPolicy policy = new EnchantmentLimitPolicy(
                 config, EnchantmentIds.DATA_DRIVEN_MAX_LEVEL_CAP, warnings::add);
 
-        assertEquals(OptionalInt.of(255), policy.resolveActiveOverride("minecraft:sharpness"));
-        assertFalse(policy.resolveActiveOverride("minecraft:mending").isPresent()); // clamped 0 -> 1 equals vanilla 1
+        assertEquals(policy.resolveActiveOverride("minecraft:sharpness"), OptionalInt.of(6));
+        assertTrue(warnings.isEmpty());
+    }
+
+    @Test
+    void clampsLevelsToCodecBoundsWithWarnings() {
+        SharpnessConfig config = new SharpnessConfig();
+        config.enchantments.put("minecraft:sharpness", 999);
+        config.enchantments.put("minecraft:smite", 5);
+        config.enchantments.put("minecraft:bane_of_arthropods", 5);
+        config.enchantments.put("minecraft:mending", 0);
+        List<String> warnings = new ArrayList<String>();
+
+        EnchantmentLimitPolicy policy = new EnchantmentLimitPolicy(
+                config, EnchantmentIds.DATA_DRIVEN_MAX_LEVEL_CAP, warnings::add);
+
+        assertEquals(OptionalInt.of(EnchantmentIds.DATA_DRIVEN_MAX_LEVEL_CAP), policy.resolveActiveOverride("minecraft:sharpness"));
         assertEquals(2, warnings.size());
     }
 

@@ -68,7 +68,7 @@ public final class EnchantmentRegistryPatcher {
 
         boolean unbreakingTransformed = false;
         if ("minecraft:unbreaking".equals(EnchantmentIds.canonicalize(enchantmentId))
-                && policy.config().unbreakingArmorFix) {
+                && policy.config().enhancements.unbreaking.modifyArmorFormula) {
             unbreakingTransformed = transformUnbreakingArmorDamageJson(json);
             modified = modified || unbreakingTransformed;
         }

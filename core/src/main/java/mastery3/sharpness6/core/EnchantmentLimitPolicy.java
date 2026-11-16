@@ -23,7 +23,7 @@ public final class EnchantmentLimitPolicy {
         this.config = config;
         this.boundedLevels = Collections.unmodifiableMap(config.toBoundedLevelMap(maxAllowedCap, warningSink));
         Set<String> customIds = new LinkedHashSet<String>();
-        for (String key : config.customMaxLevels.keySet()) {
+        for (String key : config.enchantments.keySet()) {
             String canonical = EnchantmentIds.canonicalize(key);
             if (!canonical.isEmpty()) {
                 customIds.add(canonical);
@@ -37,8 +37,7 @@ public final class EnchantmentLimitPolicy {
     }
 
     /**
-     * Returns the configured max level only if it actively overrides the vanilla default
-     * or was explicitly supplied in {@code customMaxLevels}.
+     * Returns the configured max level only if it actively overrides the vanilla default.
      */
     public OptionalInt resolveActiveOverride(String rawEnchantmentId) {
         String canonical = EnchantmentIds.canonicalize(rawEnchantmentId);

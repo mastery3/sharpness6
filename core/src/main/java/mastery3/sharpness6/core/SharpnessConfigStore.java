@@ -33,7 +33,7 @@ public final class SharpnessConfigStore {
     public static SharpnessConfig loadOrCreate(Path configPath, Consumer<String> warningSink) {
         if (!Files.exists(configPath)) {
             SharpnessConfig created = new SharpnessConfig();
-            created.normalizeFallbacks();
+            created.migrate();
             saveQuietly(configPath, created, warningSink);
             return created;
         }
@@ -45,12 +45,12 @@ public final class SharpnessConfigStore {
             warn(warningSink, "Malformed JSON in " + configPath + " (" + e.getMessage()
                     + "); using default values in memory without overwriting your file.");
             SharpnessConfig fallback = new SharpnessConfig();
-            fallback.normalizeFallbacks();
+            fallback.migrate();
             return fallback;
         } catch (IOException e) {
             warn(warningSink, "Failed to read config " + configPath + ": " + e.getMessage());
             SharpnessConfig fallback = new SharpnessConfig();
-            fallback.normalizeFallbacks();
+            fallback.migrate();
             return fallback;
         }
 
@@ -58,7 +58,7 @@ public final class SharpnessConfigStore {
             warn(warningSink, "Config file " + configPath + " was empty; restoring default configuration.");
             loaded = new SharpnessConfig();
         }
-        loaded.normalizeFallbacks();
+        loaded.migrate();
         saveQuietly(configPath, loaded, warningSink);
         return loaded;
     }

@@ -8,7 +8,7 @@ A configurable **Fabric** mod that lets players and server owners raise enchantm
 
 - Raises maximum levels for vanilla enchantments (Sharpness, Protection, Efficiency, Fortune, Looting, Unbreaking, and many more) via a per-enchantment config.
 - Optionally fixes armor Unbreaking so higher levels keep scaling instead of plateauing at 60%.
-- Supports custom/datapack enchantments through `customMaxLevels`.
+- Supports custom/datapack enchantments.
 - Works on both Java Edition clients and dedicated servers.
 
 ## Supported Minecraft Versions
