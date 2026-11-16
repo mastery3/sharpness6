@@ -26,8 +26,8 @@ public final class Entry implements ModInitializer {
     @Override
     public void onInitialize() {
         reloadConfig();
-        LOGGER.info("Loaded sharpness6 policy (sharpness max={}, bypassTooExpensive={}).",
-                policy.config().sharpness, policy.config().bypassTooExpensive);
+        LOGGER.info("Loaded sharpness6 policy (sharpness max={}).",
+                policy.config().sharpness);
     }
 
     /**

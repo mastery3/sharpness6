@@ -5,7 +5,6 @@
   "compatibilityLevel": "${mixin_compat}",
   "mixins": [
     "PendingRegistrationMixin",
-    "AnvilMenuMixin",
     "EnchantmentLevelSuffixMixin"
   ],
   "injectors": {

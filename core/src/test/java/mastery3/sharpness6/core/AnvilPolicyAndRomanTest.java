@@ -7,23 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 final class AnvilPolicyAndRomanTest {
 
     @Test
-    void adjustsAnvilCostOnlyForSingleInputWhenEnabledAndAboveCap() {
-        SharpnessConfig config = new SharpnessConfig();
-        config.bypassTooExpensive = true;
-        config.anvilMaxCost = 39;
-
-        assertEquals(15, AnvilPolicy.adjustAnvilCost(15, 1, config));
-        assertEquals(39, AnvilPolicy.adjustAnvilCost(52, 1, config));
-        // Stacked item safety check must keep cost >= 40 rejected.
-        assertEquals(40, AnvilPolicy.adjustAnvilCost(40, 2, config));
-
-        config.anvilMaxCost = -1;
-        assertEquals(75, AnvilPolicy.adjustAnvilCost(75, 1, config));
-        assertTrue(AnvilPolicy.shouldBypassExpensiveCheck(1, config));
-        assertFalse(AnvilPolicy.shouldBypassExpensiveCheck(2, config));
-    }
-
-    @Test
     void formatsRomanNumeralsThrough255Accurately() {
         assertEquals("VI", RomanNumerals.toRoman(6));
         assertEquals("X", RomanNumerals.toRoman(10));

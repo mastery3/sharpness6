@@ -7,8 +7,7 @@
     "EnchantmentBaseMixin",
     "EnchantmentSubclassesMixin",
     "TridentEnchantmentsMixin",
-    "UnbreakingMixin",
-    "AnvilScreenHandlerMixin"
+    "UnbreakingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

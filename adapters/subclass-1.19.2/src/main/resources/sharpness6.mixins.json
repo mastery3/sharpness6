@@ -9,8 +9,6 @@
     "SingleLevelSubclassesMixin",
     "SwiftSneakEnchantmentMixin",
     "UnbreakingMixin",
-    "ForgingScreenHandlerAccessor",
-    "AnvilScreenHandlerMixin",
     "EnchantmentLevelSuffixMixin"
   ],
   "injectors": {

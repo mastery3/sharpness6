@@ -55,8 +55,6 @@ public final class SharpnessConfig {
     public int vanishing_curse = 1;
     public int wind_burst = 3;
 
-    public boolean bypassTooExpensive = false;
-    public int anvilMaxCost = 39;
     public Map<String, Integer> customMaxLevels = new LinkedHashMap<String, Integer>();
 
     /**

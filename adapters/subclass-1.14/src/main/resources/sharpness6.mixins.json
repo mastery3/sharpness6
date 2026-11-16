@@ -7,7 +7,6 @@
     "EnchantmentBaseMixin",
     "EnchantmentSubclassesMixin",
     "UnbreakingMixin",
-    "AnvilContainerMixin",
     "EnchantmentLevelSuffixMixin"
   ],
   "injectors": {
