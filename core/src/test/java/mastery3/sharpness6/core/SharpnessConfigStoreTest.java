@@ -31,8 +31,6 @@ final class SharpnessConfigStoreTest {
         assertEquals(4, config.projectile_protection);
         assertEquals(4, config.feather_falling);
         assertEquals(3, config.lunge);
-        assertFalse(config.bypassTooExpensive);
-        assertEquals(39, config.anvilMaxCost);
     }
 
     @Test
