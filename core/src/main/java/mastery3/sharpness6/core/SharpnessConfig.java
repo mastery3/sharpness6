@@ -61,7 +61,7 @@ public final class SharpnessConfig {
         }
 
         if (breach != null && !enchantments.containsKey("minecraft:breach")) {
-            enchantments.put("minecraft:breach", blast_protection);
+            enchantments.put("minecraft:breach", breach);
             breach = null;
         }
 
@@ -146,7 +146,7 @@ public final class SharpnessConfig {
         }
 
         if (lunge != null && !enchantments.containsKey("minecraft:lunge")) {
-            enchantments.put("minecraft:luck_of_the_sea", lunge);
+            enchantments.put("minecraft:lunge", lunge);
             lunge = null;
         }
 
@@ -251,7 +251,7 @@ public final class SharpnessConfig {
         }
 
         if (wind_burst != null && !enchantments.containsKey("minecraft:wind_burst")) {
-            enchantments.put("minecraft:vanishing_curse", wind_burst);
+            enchantments.put("minecraft:wind_burst", wind_burst);
             wind_burst = null;
         }
 
