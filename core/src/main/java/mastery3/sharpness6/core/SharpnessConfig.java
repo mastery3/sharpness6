@@ -255,17 +255,35 @@ public final class SharpnessConfig {
             wind_burst = null;
         }
 
-        if (unbreakingArmorFix != null) {
+        if (Boolean.TRUE.equals(unbreakingArmorFix)) {
             enhancements.unbreaking.modifyArmorFormula = true;
             unbreakingArmorFix = null;
         }
 
-        for (Map.Entry<String, Integer> entry : enchantments.entrySet()) {
-            String canonicalizedEnchantmentName = EnchantmentIds.canonicalize(entry.getKey());
-            if (entry.getKey() != canonicalizedEnchantmentName && !enchantments.containsKey(canonicalizedEnchantmentName)) {
-                enchantments.put(canonicalizedEnchantmentName, entry.getValue());
-                enchantments.remove(entry.getKey());
+        // Canonicalize shorthand keys (e.g. "sharpness") to namespaced keys
+        // ("minecraft:sharpness") without mutating the map during iteration.
+        // An explicitly namespaced entry always wins over its shorthand alias.
+        Map<String, Integer> additions = new LinkedHashMap<String, Integer>();
+        java.util.Set<String> removals = new java.util.LinkedHashSet<String>();
+        for (Map.Entry<String, Integer> entry : new java.util.ArrayList<Map.Entry<String, Integer>>(enchantments.entrySet())) {
+            String key = entry.getKey();
+            if (key == null) {
+                continue;
             }
+            String canonical = EnchantmentIds.canonicalize(key);
+            if (key.equals(canonical)) {
+                continue;
+            }
+            if (entry.getValue() != null && !enchantments.containsKey(canonical) && !additions.containsKey(canonical)) {
+                additions.put(canonical, entry.getValue());
+                removals.add(key);
+            }
+        }
+        for (Map.Entry<String, Integer> e : additions.entrySet()) {
+            enchantments.put(e.getKey(), e.getValue());
+        }
+        for (String k : removals) {
+            enchantments.remove(k);
         }
     }
 
@@ -277,11 +295,18 @@ public final class SharpnessConfig {
         Map<String, Integer> levels = new LinkedHashMap<String, Integer>();
 
         for (Map.Entry<String, Integer> entry : enchantments.entrySet()) {
-            String key = EnchantmentIds.canonicalize(entry.getKey());
+            String key = entry.getKey();
+            String canonical = EnchantmentIds.canonicalize(key);
             Integer value = entry.getValue();
-            if (!key.isEmpty() && value != null) {
-                putBounded(levels, key, value.intValue(), maxAllowedCap, warningSink);
+            if (canonical.isEmpty() || value == null) {
+                continue;
             }
+            // If a shorthand alias and its namespaced form both exist, the
+            // namespaced form wins; skip the alias to avoid overriding it.
+            if (!key.equals(canonical) && enchantments.containsKey(canonical)) {
+                continue;
+            }
+            putBounded(levels, canonical, value.intValue(), maxAllowedCap, warningSink);
         }
         return levels;
     }
