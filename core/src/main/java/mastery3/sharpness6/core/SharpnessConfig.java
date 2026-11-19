@@ -14,15 +14,17 @@ public final class SharpnessConfig {
 
     public static final class Enhancements {
         public Unbreaking unbreaking = new Unbreaking();
+        public static final class Unbreaking {
+            public Boolean modifyArmorFormula = false;
 
-        public Enhancements() {
+            void resetNull() {
+                if (modifyArmorFormula == null) { modifyArmorFormula = false; }
+            }
         }
-    }
 
-    public static final class Unbreaking {
-        public Boolean modifyArmorFormula = false;
-
-        public Unbreaking() {
+        void resetNull() {
+            if (unbreaking == null) { unbreaking = new Unbreaking(); }
+            unbreaking.resetNull();
         }
     }
 
@@ -31,14 +33,16 @@ public final class SharpnessConfig {
      * and normalizes nullable containers.
      */
     public void migrate() {
+        if (enchantments == null) { enchantments = new LinkedHashMap<String, Integer>(); }
+        if (enhancements == null) { enhancements = new Enhancements(); }
+        enhancements.resetNull();
+
         if (smite == null) { smite = sharpness; }
         if (bane_of_arthropods == null) { bane_of_arthropods = sharpness; }
         if (fire_protection == null) { fire_protection = protection; }
         if (blast_protection == null) { blast_protection = protection; }
         if (projectile_protection == null) { projectile_protection = protection; }
         if (feather_falling == null) { feather_falling = protection; }
-        if (enchantments == null) { enchantments = new LinkedHashMap<String, Integer>(); }
-        if (enhancements == null) { enhancements = new Enhancements(); }
 
         if (aqua_affinity != null && !enchantments.containsKey("minecraft:aqua_affinity")) {
             enchantments.put("minecraft:aqua_affinity", aqua_affinity);
@@ -267,15 +271,21 @@ public final class SharpnessConfig {
         java.util.Set<String> removals = new java.util.LinkedHashSet<String>();
         for (Map.Entry<String, Integer> entry : new java.util.ArrayList<Map.Entry<String, Integer>>(enchantments.entrySet())) {
             String key = entry.getKey();
+            Integer value = entry.getValue();
             if (key == null) {
                 continue;
             }
+            if (value == null) {
+                removals.add(key);
+                continue;
+            }
+
             String canonical = EnchantmentIds.canonicalize(key);
             if (key.equals(canonical)) {
                 continue;
             }
-            if (entry.getValue() != null && !enchantments.containsKey(canonical) && !additions.containsKey(canonical)) {
-                additions.put(canonical, entry.getValue());
+            if (value != null && !enchantments.containsKey(canonical) && !additions.containsKey(canonical)) {
+                additions.put(canonical, value);
                 removals.add(key);
             }
         }

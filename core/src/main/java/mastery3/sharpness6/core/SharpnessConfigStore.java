@@ -24,8 +24,7 @@ public final class SharpnessConfigStore {
             .disableHtmlEscaping()
             .create();
 
-    private SharpnessConfigStore() {
-    }
+    private SharpnessConfigStore() {}
 
     /**
      * Loads config from {@code configPath}, writing defaults if the file does not exist or migrating null fields cleanly.
@@ -33,7 +32,6 @@ public final class SharpnessConfigStore {
     public static SharpnessConfig loadOrCreate(Path configPath, Consumer<String> warningSink) {
         if (!Files.exists(configPath)) {
             SharpnessConfig created = new SharpnessConfig();
-            created.migrate();
             saveQuietly(configPath, created, warningSink);
             return created;
         }
@@ -43,7 +41,7 @@ public final class SharpnessConfigStore {
             loaded = GSON.fromJson(reader, SharpnessConfig.class);
         } catch (JsonParseException e) {
             warn(warningSink, "Malformed JSON in " + configPath + " (" + e.getMessage()
-                    + "); using default values in memory without overwriting your file.");
+                    + "); using default values.");
             SharpnessConfig fallback = new SharpnessConfig();
             fallback.migrate();
             return fallback;

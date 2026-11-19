@@ -48,10 +48,7 @@ public final class EnchantmentLimitPolicy {
         if (explicitlyCustomIds.contains(canonical)) {
             return OptionalInt.of(configured.intValue());
         }
-        Integer vanillaDefault = EnchantmentIds.vanillaDefaultMaxLevel(canonical);
-        if (vanillaDefault != null && vanillaDefault.intValue() == configured.intValue()) {
-            return OptionalInt.empty();
-        }
+
         return OptionalInt.of(configured.intValue());
     }
 
