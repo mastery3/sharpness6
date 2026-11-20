@@ -1,0 +1,27 @@
+plugins {
+    id 'base'
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}" apply false
+    id 'legacy-looming' version "${loom_version}" apply false
+}
+
+subprojects { sub ->
+    if (sub.path.startsWith(':versions:')) {
+        sub.apply from: rootProject.file('gradle/version-conventions.gradle')
+    }
+}
+
+tasks.register('dist', Copy) {
+    group = 'build'
+    description = 'Collects remapped Legacy Fabric artifacts into legacy/build/dist.'
+    subprojects.findAll { it.path.startsWith(':versions:') }.each { verProj ->
+        dependsOn "${verProj.path}:build"
+        from verProj.layout.buildDirectory.dir('libs')
+    }
+    include '*.jar'
+    exclude '*-dev.jar', '*-sources.jar'
+    into layout.buildDirectory.dir('dist')
+}
+
+tasks.named('build') {
+    dependsOn 'dist'
+}
