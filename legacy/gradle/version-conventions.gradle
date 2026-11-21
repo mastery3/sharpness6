@@ -1,0 +1,89 @@
+// Conventions for legacy/adapters/versions (MC 1.12.2/1.13.2). Deliberate fork of ../gradle/version-conventions.gradle:
+// older defaults are intentional (Fabric for these versions ships loader 0.14.x; legacy-looming instead of root loom).
+// Keep shared sections in sync with the root file when editing.
+def vProps = new Properties()
+project.file('gradle.properties').withInputStream { vProps.load(it) }
+
+def mcVersion = vProps.getProperty('minecraft_version')
+def yarnBuild = vProps.getProperty('yarn_build')
+def adapterName = vProps.getProperty('adapter')
+def langFormat = vProps.getProperty('lang_format', 'json')
+def levelSuffixMixin = Boolean.parseBoolean(vProps.getProperty('level_suffix_mixin', 'false'))
+def mcDep = vProps.getProperty('mc_dep', "~${mcVersion}")
+def loaderDep = vProps.getProperty('loader_dep', '>=0.14.0')
+def loaderVersion = vProps.getProperty('loader_version', rootProject.property('loader_version').toString())
+
+apply plugin: 'net.fabricmc.fabric-loom-remap'
+apply plugin: 'legacy-looming'
+
+version = "${rootProject.property('mod_version')}+mc${mcVersion}"
+group = rootProject.property('maven_group')
+
+base {
+    archivesName = rootProject.property('archives_base_name')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 8
+    options.encoding = 'UTF-8'
+    options.compilerArgs.add('-Xlint:-options')
+}
+
+def langDir = langFormat == 'legacy'
+        ? rootProject.file('../shared-resources/lang-legacy')
+        : rootProject.file('../shared-resources/lang-json')
+
+sourceSets {
+    main {
+        java.srcDirs = [
+                rootProject.file('../core/src/main/java'),
+                rootProject.file('adapters/legacy-common/src/main/java'),
+                rootProject.file("adapters/${adapterName}/src/main/java")
+        ]
+        resources.srcDirs = [
+                rootProject.file('adapters/legacy-common/src/main/resources'),
+                rootProject.file("adapters/${adapterName}/src/main/resources"),
+                rootProject.file('../shared-resources/common'),
+                langDir,
+                rootProject.file('../shared-resources/templates')
+        ]
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${mcVersion}"
+    mappings(legacy.yarn(mcVersion, yarnBuild))
+    modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
+}
+
+processResources {
+    def expandProps = [
+            version      : project.version,
+            mc_dep       : mcDep,
+            loader_dep   : loaderDep,
+            java_version : '8',
+            mixin_compat : 'JAVA_8'
+    ]
+    inputs.properties(expandProps)
+
+    filesMatching(['fabric.mod.json', 'sharpness6.mixins.json']) {
+        expand(expandProps)
+    }
+    if (levelSuffixMixin) {
+        exclude 'assets/minecraft/lang/en_us.json'
+        exclude 'assets/minecraft/lang/en_us.lang'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+jar {
+    from(rootProject.file('../LICENSE')) {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}

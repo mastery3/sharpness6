@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            name = 'Legacy Fabric'
+            url = 'https://maven.legacyfabric.net/'
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'sharpness6-legacy'
+
+include ':versions:1.12.2'
+include ':versions:1.13.2'
